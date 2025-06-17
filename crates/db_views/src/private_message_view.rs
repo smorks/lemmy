@@ -95,6 +95,11 @@ fn queries<'a>() -> Queries<
     query = query
       .filter(private_message::deleted.eq(false))
       .filter(private_message::removed.eq(false))
+      .filter(
+        private_message::deleted_by_recipient
+          .eq(false)
+          .and(private_message::recipient_id.eq(recipient_id)),
+      )
       .limit(limit)
       .offset(offset)
       .order_by(private_message::published.desc());
