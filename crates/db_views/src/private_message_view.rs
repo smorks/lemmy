@@ -66,21 +66,21 @@ fn queries<'a>() -> Queries<
       // Dont show replies from blocked instances
       .filter(instance_block::person_id.is_null());
 
+    let recip_filter = private_message::recipient_id
+      .eq(recipient_id)
+      .and(private_message::deleted_by_recipient.eq(false));
+
     // If its unread, I only want the ones to me
     if options.unread_only {
       query = query.filter(private_message::read.eq(false));
       if let Some(i) = options.creator_id {
         query = query.filter(private_message::creator_id.eq(i))
       }
-      query = query.filter(private_message::recipient_id.eq(recipient_id));
+      query = query.filter(recip_filter);
     }
     // Otherwise, I want the ALL view to show both sent and received
     else {
-      query = query.filter(
-        private_message::recipient_id
-          .eq(recipient_id)
-          .or(private_message::creator_id.eq(recipient_id)),
-      );
+      query = query.filter(recip_filter.or(private_message::creator_id.eq(recipient_id)));
       if let Some(i) = options.creator_id {
         query = query.filter(
           private_message::creator_id
@@ -147,7 +147,11 @@ impl PrivateMessageView {
       // Dont count replies from blocked instances
       .filter(instance_block::person_id.is_null())
       .filter(private_message::read.eq(false))
-      .filter(private_message::recipient_id.eq(my_person_id))
+      .filter(
+        private_message::recipient_id
+          .eq(my_person_id)
+          .and(private_message::deleted_by_recipient.eq(false)),
+      )
       .filter(private_message::deleted.eq(false))
       .filter(private_message::removed.eq(false))
       .select(count(private_message::id))
@@ -259,6 +263,18 @@ mod tests {
       .await
       .unwrap();
 
+    // this is deleted by the recipient so it shouldn't be returned in any queries by timmy,
+    // but it should show on jess's side.
+    let jess_timmy_message_deleted_by_recip_form = PrivateMessageInsertForm::builder()
+      .creator_id(jess.id)
+      .recipient_id(timmy.id)
+      .deleted_by_recipient(Some(true))
+      .content(message_content.clone())
+      .build();
+    PrivateMessage::create(pool, &jess_timmy_message_deleted_by_recip_form)
+      .await
+      .unwrap();
+
     Ok(Data {
       instance,
       timmy,
@@ -344,6 +360,28 @@ mod tests {
     assert_length!(1, &timmy_sara_unread_messages);
     assert_eq!(timmy_sara_unread_messages[0].creator.id, sara.id);
     assert_eq!(timmy_sara_unread_messages[0].recipient.id, timmy.id);
+
+    let timmy_jess_messages = PrivateMessageQuery {
+      unread_only: false,
+      creator_id: Some(jess.id),
+      ..Default::default()
+    }
+    .list(pool, timmy.id)
+    .await
+    .unwrap();
+
+    assert_length!(1, &timmy_jess_messages);
+
+    let jess_timmy_messages = PrivateMessageQuery {
+      unread_only: false,
+      creator_id: Some(timmy.id),
+      ..Default::default()
+    }
+    .list(pool, jess.id)
+    .await
+    .unwrap();
+
+    assert_length!(2, &jess_timmy_messages);
 
     cleanup(instance.id, pool).await
   }
