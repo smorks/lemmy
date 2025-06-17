@@ -35,6 +35,15 @@ pub struct DeletePrivateMessage {
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "full", derive(TS))]
 #[cfg_attr(feature = "full", ts(export))]
+/// Delete a private message.
+pub struct DeletePrivateMessageForRecipient {
+  pub private_message_id: PrivateMessageId,
+  pub deleted: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "full", derive(TS))]
+#[cfg_attr(feature = "full", ts(export))]
 /// Mark a private message as read.
 pub struct MarkPrivateMessageAsRead {
   pub private_message_id: PrivateMessageId,
