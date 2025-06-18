@@ -148,6 +148,7 @@ impl Object for ApubPrivateMessage {
       read: None,
       ap_id: Some(note.id.into()),
       local: Some(false),
+      deleted_by_recipient: Some(false),
     };
     let timestamp = note.updated.or(note.published).unwrap_or_else(naive_now);
     let pm = PrivateMessage::insert_apub(&mut context.pool(), timestamp, &form).await?;
