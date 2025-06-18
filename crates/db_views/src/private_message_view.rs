@@ -152,7 +152,11 @@ impl PrivateMessageView {
       // Dont count replies from blocked instances
       .filter(instance_block::person_id.is_null())
       .filter(private_message::read.eq(false))
-      .filter(private_message::recipient_id.eq(my_person_id))
+      .filter(
+        private_message::recipient_id
+          .eq(my_person_id)
+          .and(private_message::deleted_by_recipient.eq(false)),
+      )
       .filter(private_message::deleted.eq(false))
       .filter(private_message::removed.eq(false))
       .select(count(private_message::id))
