@@ -33,6 +33,7 @@ pub struct PrivateMessage {
   pub ap_id: DbUrl,
   pub local: bool,
   pub removed: bool,
+  pub deleted_by_recipient: bool,
 }
 
 #[derive(Clone, derive_new::new)]
