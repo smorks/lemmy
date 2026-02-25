@@ -148,6 +148,7 @@ use lemmy_api_crud::{
   private_message::{
     create::create_private_message,
     delete::delete_private_message,
+    delete_for_recipient::delete_private_message_for_recipient,
     update::edit_private_message,
   },
   site::{create::create_site, read::get_site, update::edit_site},
@@ -326,6 +327,10 @@ pub fn config(cfg: &mut ServiceConfig, rate_limit: &RateLimit) {
           .route("", post().to(create_private_message))
           .route("", put().to(edit_private_message))
           .route("", delete().to(delete_private_message))
+          .route(
+            "/delete_for_recipient",
+            post().to(delete_private_message_for_recipient),
+          )
           .route("/report", post().to(create_pm_report))
           .route("/report/resolve", put().to(resolve_pm_report)),
       )

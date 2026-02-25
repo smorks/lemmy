@@ -21,6 +21,15 @@ pub struct DeletePrivateMessage {
   pub deleted: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "ts-rs", derive(ts_rs::TS))]
+#[cfg_attr(feature = "ts-rs", ts(optional_fields, export))]
+/// Delete a private message.
+pub struct DeletePrivateMessageForRecipient {
+  pub private_message_id: PrivateMessageId,
+  pub deleted: bool,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "ts-rs", derive(ts_rs::TS))]
 #[cfg_attr(feature = "ts-rs", ts(optional_fields, export))]

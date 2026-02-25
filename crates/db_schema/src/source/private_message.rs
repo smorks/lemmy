@@ -69,4 +69,5 @@ pub struct PrivateMessageUpdateForm {
   pub ap_id: Option<DbUrl>,
   pub local: Option<bool>,
   pub removed: Option<bool>,
+  pub deleted_by_recipient: Option<bool>,
 }

@@ -5,6 +5,7 @@ pub mod actions {
   pub use lemmy_db_views_private_message::api::{
     CreatePrivateMessage,
     DeletePrivateMessage,
+    DeletePrivateMessageForRecipient,
     EditPrivateMessage,
   };
 }

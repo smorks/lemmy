@@ -44,6 +44,7 @@ lemmy_db_views_post_comment_combined = { workspace = true, features = ["full"] }
 lemmy_db_views_person_content_combined = { workspace = true, features = [
   "full",
 ] }
+lemmy_db_views_private_message = { workspace = true, features = ["full"] }
 lemmy_db_views_report_combined = { workspace = true, features = ["full"] }
 lemmy_db_views_site = { workspace = true, features = ["full"] }
 lemmy_db_views_registration_applications = { workspace = true, features = [
